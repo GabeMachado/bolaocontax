@@ -34,12 +34,24 @@
 
   nav { background: var(--bg2); border-bottom: 1px solid var(--border2); padding: 0 1rem; display: flex; align-items: center; position: sticky; top: 0; z-index: 100; }
   .nav-brand { font-size: 15px; font-weight: 700; color: var(--orange); padding: 10px 0; margin-right: 1.25rem; display: flex; align-items: center; gap: 10px; white-space: nowrap; justify-content: center; }
-  .nav-logo { height: 32px; width: auto; display: block; }
+  .nav-logo { height: 32px; width: auto; display: block;  }
   .nav-divider { width: 1px; height: 24px; background: var(--border2); }
   .nav-tabs { display: flex; flex: 1; overflow-x: auto; }
   .nav-tab { padding: 13px 13px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all .15s; background: none; border-top: none; border-left: none; border-right: none; }
   .nav-tab:hover { color: var(--text); }
   .nav-tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+  @media (max-width: 600px) {
+    nav { flex-wrap: wrap; padding: 0 .75rem; }
+    .nav-brand { width: 100%; padding: 10px 0 6px; margin-right: 0; border-bottom: 1px solid var(--border); }
+    .nav-tabs { width: 100%; }
+    .nav-tab { flex: 1; text-align: center; padding: 10px 6px; font-size: 12px; justify-content: center; display: flex; align-items: center; gap: 4px; }
+    .nav-logo { height: 24px; }
+    .nav-divider { display: none; }
+    .admin-badge { display: none; }
+  }
+  .admin-badge { font-size: 10px; background: var(--orange); color: #000; padding: 2px 6px; border-radius: 20px; margin-left: 5px; font-weight: 700; }
+
+
   .admin-badge { font-size: 10px; background: var(--orange); color: #000; padding: 2px 6px; border-radius: 20px; margin-left: 5px; font-weight: 700; }
 
   .page { padding: 1.25rem 1rem; max-width: 960px; margin: 0 auto; width: 100%; }
@@ -162,6 +174,19 @@
   .podio-sub { font-size: 11px; color: var(--text3); }
 
   .campeao-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--orange); background: rgba(255,0,48,.12); padding: 2px 7px; border-radius: 20px; }
+  .var-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 6px; white-space: nowrap; min-width: 36px; justify-content: center; }
+  .var-subiu { background: rgba(34,197,94,.15); color: #22c55e; }
+  .var-caiu { background: rgba(239,68,68,.15); color: #ef4444; }
+  .var-manteve { background: rgba(255,0,48,.15); color: var(--orange); }
+  .var-novo { background: var(--surface2); color: var(--text3); }
+  .divider { border: none; border-top: 1px solid var(--border); margin: .9rem 0; }
+  .empty { text-align: center; padding: 1.5rem; color: var(--text3); font-size: 13px; }
+  .spin { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+  .scroll-x { overflow-x: auto; }
+  .palpites-pub-grid { display: grid; gap: .5rem; }
+  .pub-palpite-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg3); border-radius: 8px; padding: .5rem .75rem; gap: .5rem; }
+
   /* ACCORDION PALPITES */
   .jogo-accordion { cursor: pointer; user-select: none; }
   .jogo-accordion-toggle { display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: .6rem; padding: .4rem; border-radius: 8px; font-size: 11px; font-weight: 600; color: var(--text3); background: var(--bg3); border: none; width: 100%; cursor: pointer; transition: all .15s; font-family: 'Inter', system-ui, sans-serif; }
@@ -184,19 +209,6 @@
   .jp-badge.b1 { background: rgba(59,130,246,.15); color: #3b82f6; }
   .jp-badge.b0 { background: var(--surface2); color: var(--text3); }
   .jp-badge.bwait { background: var(--surface2); color: var(--text3); }
-
-  .var-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 6px; white-space: nowrap; min-width: 36px; justify-content: center; }
-  .var-subiu { background: rgba(34,197,94,.15); color: #22c55e; }
-  .var-caiu { background: rgba(239,68,68,.15); color: #ef4444; }
-  .var-manteve { background: rgba(231,139,46,.15); color: var(--orange); }
-  .var-novo { background: var(--surface2); color: var(--text3); }
-  .divider { border: none; border-top: 1px solid var(--border); margin: .9rem 0; }
-  .empty { text-align: center; padding: 1.5rem; color: var(--text3); font-size: 13px; }
-  .spin { animation: spin 1s linear infinite; display: inline-block; }
-  @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
-  .scroll-x { overflow-x: auto; }
-  .palpites-pub-grid { display: grid; gap: .5rem; }
-  .pub-palpite-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg3); border-radius: 8px; padding: .5rem .75rem; gap: .5rem; }
 
   /* PLACAR ADMIN INPUT */
   .placar-input-sm { width: 40px !important; text-align: center; font-size: 15px; font-weight: 700; padding: 4px !important; }
@@ -272,6 +284,31 @@ async function loginAdmin() {
   } catch(e) {
     showMsg('Senha incorreta',true);
     if (btn) { btn.disabled=false; btn.innerHTML='<i class="ti ti-lock"></i> Entrar'; }
+  }
+}
+
+async function sincronizarResultados() {
+  const btn = document.getElementById('btn-sync');
+  if (btn) { btn.disabled=true; btn.innerHTML='<i class="ti ti-loader spin"></i> Sincronizando...'; }
+  try {
+    const r = await fetch('https://kzfnuctsindncjsancki.supabase.co/functions/v1/sync-resultados', {
+      method: 'GET',
+      headers: { 'Authorization': 'Bearer '+state.session.access_token }
+    });
+    const data = await r.json();
+    if (data.ok) {
+      await loadAll();
+      const msg = data.atualizados > 0
+        ? `✓ ${data.atualizados} jogo(s) atualizado(s) automaticamente!`
+        : `Nenhum jogo novo para atualizar (${data.jogos_finalizados_api} finalizados na API)`;
+      showMsg(msg);
+    } else {
+      showMsg('Erro na API: '+(data.error||data.detail||'desconhecido'), true);
+    }
+  } catch(e) {
+    showMsg('Erro ao sincronizar: '+e.message, true);
+  } finally {
+    if (btn) { btn.disabled=false; btn.innerHTML='<i class="ti ti-cloud-download"></i> Sincronizar agora'; }
   }
 }
 
@@ -391,6 +428,7 @@ function render() {
       ${t.badge?'<span class="admin-badge">ADM</span>':''}
     </button>`).join('');
 
+
   const el=document.getElementById('main-content');
   if(state.loading){el.innerHTML='<div class="page"><div class="empty"><i class="ti ti-loader spin" style="font-size:24px"></i><br>Carregando...</div></div>';return;}
   if(state.tab==='ranking') el.innerHTML=renderRanking();
@@ -415,7 +453,7 @@ function renderRanking() {
   const rows=r.map((p,i)=>{
     const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
     const campeaoBadge = p.acertouCampeao
-      ? `<span class="campeao-badge" style="margin-top:3px;background:rgba(231,139,46,.3)">🏆 ${p.campeao} +20</span>`
+      ? `<span class="campeao-badge" style="margin-top:3px;background:rgba(255,0,48,.3)">🏆 ${p.campeao} +20</span>`
       : `<span class="campeao-badge" style="margin-top:3px">⭐ ${p.campeao}</span>`;
     let varBadge = '';
     if (p.variacao === 'subiu')    varBadge = `<span class="var-badge var-subiu">▲ ${p.variacaoN}</span>`;
@@ -611,6 +649,7 @@ function renderAdmin() {
       <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="logoutAdmin()"><i class="ti ti-logout"></i> Sair</button>
     </div>
     ${state.msg?`<div class="alert ${state.msg.err?'alert-error':'alert-success'}">${state.msg.txt}</div>`:''}
+
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num">${state.participantes.length}</div><div class="stat-lbl">Participantes</div></div>
       <div class="stat-card"><div class="stat-num">${state.palpites.length}</div><div class="stat-lbl">Palpites</div></div>
@@ -667,7 +706,9 @@ function renderAdmin() {
     </div>
 
     <div class="card" style="padding:0;overflow:hidden">
-      <div style="padding:.75rem 1.25rem;border-bottom:1px solid var(--border)"><span class="section-label" style="margin:0">Registrar resultados</span></div>
+      <div style="padding:.75rem 1.25rem;border-bottom:1px solid var(--border)">
+        <span class="section-label" style="margin:0">Registrar resultados</span>
+      </div>
       <div style="padding:1rem">
         <div class="fase-tabs">${Object.entries(FASES).map(([k,v])=>`<button class="fase-tab ${state.fase===k?'active':''}" onclick="state.fase='${k}';render()">${v}</button>`).join('')}</div>
         ${state.fase==='grupo'?`<div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem">${GRUPOS.map(g=>`<button class="fase-tab ${state.grupo===g?'active':''}" onclick="state.grupo='${g}';render()">Grupo ${g}</button>`).join('')}</div>`:''}
