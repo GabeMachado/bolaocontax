@@ -381,6 +381,23 @@ async function api(path, method='GET', body=null) {
   return r.json();
 }
 
+// Busca TODOS os registros paginando em blocos de 1000 (limite padrão do PostgREST)
+// Necessário para tabelas que podem crescer além de 1000 linhas, como palpites.
+async function apiAll(path) {
+  let all = [];
+  let offset = 0;
+  const pageSize = 1000;
+  while (true) {
+    const sep = path.includes('?') ? '&' : '?';
+    const page = await api(`${path}${sep}limit=${pageSize}&offset=${offset}`);
+    if (!page || page.length === 0) break;
+    all = all.concat(page);
+    if (page.length < pageSize) break; // última página
+    offset += pageSize;
+  }
+  return all;
+}
+
 async function loginAdmin() {
   const senha = document.getElementById('admin-pass')?.value;
   if (!senha) { showMsg('Digite a senha',true); return; }
@@ -432,7 +449,7 @@ async function loadAll() {
     const [j,p,pa,cfg,hist] = await Promise.all([
       api('/rest/v1/jogos?select=*&order=numero'),
       api('/rest/v1/participantes?select=*&order=nome'),
-      api('/rest/v1/palpites?select=*'),
+      apiAll('/rest/v1/palpites?select=*'), // paginado: pode passar de 1000 registros
       api('/rest/v1/config?select=*'),
       api('/rest/v1/ranking_historico?select=*&order=snapshot_at.desc&limit=500')
     ]);
@@ -1102,19 +1119,16 @@ async function _salvarPalpite(partId, jogoId) {
   if (btn) { btn.innerHTML='<i class="ti ti-loader spin" style="font-size:12px"></i>'; btn.disabled=true; }
 
   try {
-    // Busca ignorando IDs temporários (evita PATCH inválido ou POST duplicado -> erro 409)
-    const existe = state.palpites.find(p=>p.participante_id===partId&&p.jogo_id===jogoId&&!String(p.id).startsWith('tmp-'));
+    const existe = state.palpites.find(p=>p.participante_id===partId&&p.jogo_id===jogoId);
     if (existe) {
       await api(`/rest/v1/palpites?id=eq.${existe.id}`,'PATCH',{gols_casa:gcN,gols_fora:gfN});
-      const idx = state.palpites.findIndex(p=>p.id===existe.id);
-      if (idx>=0) { state.palpites[idx].gols_casa=gcN; state.palpites[idx].gols_fora=gfN; }
     } else {
-      // Remove qualquer entrada temporária stale para este par antes de criar
-      state.palpites = state.palpites.filter(p=>!(p.participante_id===partId&&p.jogo_id===jogoId));
-      const res = await api('/rest/v1/palpites','POST',{participante_id:partId,jogo_id:jogoId,gols_casa:gcN,gols_fora:gfN});
-      const novoId = Array.isArray(res) ? res[0]?.id : res?.id;
-      state.palpites.push({participante_id:partId,jogo_id:jogoId,gols_casa:gcN,gols_fora:gfN,pontos:null,id:novoId||('tmp-'+Date.now())});
+      await api('/rest/v1/palpites','POST',{participante_id:partId,jogo_id:jogoId,gols_casa:gcN,gols_fora:gfN});
     }
+    // atualiza estado local sem recarregar tudo
+    const idx = state.palpites.findIndex(p=>p.participante_id===partId&&p.jogo_id===jogoId);
+    if (idx>=0) { state.palpites[idx].gols_casa=gcN; state.palpites[idx].gols_fora=gfN; }
+    else { state.palpites.push({participante_id:partId,jogo_id:jogoId,gols_casa:gcN,gols_fora:gfN,pontos:null,id:'tmp-'+Date.now()}); }
     computeRanking();
     // feedback visual inline
     if (btn) {
@@ -1149,7 +1163,7 @@ async function _excluirPalpite(palpiteId, jogoId) {
 function fecharModal(){
   document.getElementById('modal-palpites')?.remove();
   state.modalFase=null; state.modalGrupo=null;
-  loadAll(); // recarrega tudo do banco ao fechar (evita estado desatualizado / erro 409)
+  render(); // atualiza contadores na tabela
 }
 
 async function salvarCampeao() {
